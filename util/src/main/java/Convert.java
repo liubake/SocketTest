@@ -75,29 +75,7 @@ public class Convert {
                     }
                 }
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
-
-
-
-
-
-
-
-
-
     }
 
 
@@ -151,11 +129,9 @@ public class Convert {
         if(headPackage==null || headPackage.length!=2)
             throw new IllegalArgumentException("无效的包头");
         else{
-            int a = 0;
-            int b = 0;
-            int c = (headPackage[0] & 0xff) << 8;
-            int d = headPackage[1] & 0xff;
-            return a | b | c | d;
+            int a = (headPackage[0] & 0xff) << 8;
+            int b = headPackage[1] & 0xff;
+            return a | b;
         }
     }
 
