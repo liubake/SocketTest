@@ -6,11 +6,20 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="sockettest" />
+        <module name="client" />
+        <module name="nioclient" />
+        <module name="nioserver" />
+        <module name="server" />
+        <module name="util" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="sockettest" target="1.5" />
+      <module name="client" target="1.8" />
+      <module name="nioclient" target="1.8" />
+      <module name="nioserver" target="1.8" />
+      <module name="server" target="1.8" />
+      <module name="sockettest" target="1.8" />
+      <module name="util" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

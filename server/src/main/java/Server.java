@@ -9,7 +9,9 @@ import java.util.concurrent.Executors;
  */
 public class Server {
 
-    public  static  void main(){
+    public  static  void main(String[] args){
+
+
         int port=9988;
         ExecutorService executor=null;
         ServerSocket serverSocket=null;

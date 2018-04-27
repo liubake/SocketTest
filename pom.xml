@@ -12,6 +12,7 @@
         <module>server</module>
         <module>nioclient</module>
         <module>nioserver</module>
+        <module>util</module>
     </modules>
     <packaging>pom</packaging>
 

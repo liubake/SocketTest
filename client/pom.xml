@@ -11,5 +11,11 @@
 
     <artifactId>client</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <artifactId>util</artifactId>
+            <groupId>com.erola</groupId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

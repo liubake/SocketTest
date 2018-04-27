@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -18,13 +15,28 @@ public class ServerHandler implements Runnable {
     @Override
     public void run() {
         PrintWriter out=null;
-        BufferedReader in=null;
+        InputStream in=null;
+
+        byte[] headBytes = new byte[0];
+        byte[] bodyBytes = new byte[0];
         try{
-            String content=null;
             out=new PrintWriter(socket.getOutputStream(), true);
-            in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            in = socket.getInputStream();
             while (true){
-                content=in.readLine();
+                if(headBytes.length < Convert.HeaderLength){
+                    int remainLength = Convert.HeaderLength-headBytes.length;
+                    byte[] remainHeader = new byte[remainLength];
+                    int readLength = in.read(remainHeader);
+                    if(readLength>0) {
+                        System.arraycopy(remainHeader, 0, headBytes, headBytes.length, readLength);
+                    }
+                    if(readLength < remainLength){
+                        continue;
+                    }
+                }
+                //int bodyLength = Convert.getBodyLength()
+
+
 
 
 

@@ -9,13 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>nioserver</artifactId>
+    <artifactId>util</artifactId>
 
-    <dependencies>
-        <dependency>
-            <artifactId>util</artifactId>
-            <groupId>com.erola</groupId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+
 </project>
