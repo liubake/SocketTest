@@ -10,15 +10,12 @@ import java.util.concurrent.Executors;
 public class Server {
 
     public  static  void main(String[] args){
-
-
-        int port=9988;
         ExecutorService executor=null;
         ServerSocket serverSocket=null;
 
         try{
             executor=Executors.newFixedThreadPool(100);
-            serverSocket=new ServerSocket(port);
+            serverSocket=new ServerSocket(Convert.Port);
             while (true){
                 Socket socket=serverSocket.accept();
                 executor.execute(new ServerHandler(socket));
@@ -29,7 +26,6 @@ public class Server {
             if(serverSocket!=null){
                 try {
                     serverSocket.close();
-                    serverSocket=null;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

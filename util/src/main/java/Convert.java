@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 /**
@@ -9,85 +8,10 @@ import java.nio.charset.Charset;
  */
 public class Convert {
 
-
-
-
-    public static void receiveProcess(Socket socket, IMessageHandler handler){
-
-        if(socket == null)
-            throw new IllegalArgumentException("无效的 socket");
-        else{
-            PrintWriter out=null;
-            InputStream in=null;
-
-            byte[] headBytes = new byte[0];
-            byte[] bodyBytes = new byte[0];
-            try{
-                out=new PrintWriter(socket.getOutputStream(), true);
-                in = socket.getInputStream();
-                while (true){
-                    if(headBytes.length < Convert.HeaderLength){
-                        int remainLength = Convert.HeaderLength-headBytes.length;
-                        byte[] remainHeader = new byte[remainLength];
-                        int readLength = in.read(remainHeader);
-                        if(readLength>0) {
-                            System.arraycopy(remainHeader, 0, headBytes, headBytes.length, readLength);
-                        }
-                        if(readLength < remainLength){
-                            continue;
-                        }
-                    }
-                    int bodyLength = Convert.getBodyLength(headBytes);
-
-
-
-
-
-                }
-
-
-
-            }catch (Exception e){
-
-            }finally {
-                if(in!=null){
-                    try {
-                        in.close();
-                        in=null;
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-                if(out!=null){
-                    try {
-                        out.close();
-                        out=null;
-                    }catch (Exception e1){
-                        e1.printStackTrace();
-                    }
-                }
-                if(socket!=null){
-                    try {
-                        socket.close();
-                        socket=null;
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * 端口号
+     */
+    public final static int Port = 9988;
 
     /**
      * 包头长度
@@ -135,46 +59,102 @@ public class Convert {
         }
     }
 
-
     /**
-     *
-     * @param content
+     * 将 byte 数组转换为字符串
+     * @param bodyPackage
      * @return
      */
-    public static byte[] getBodyFormContent(String content){
-        if(content==null || content.isEmpty()){
+    public static String getContent(byte[] bodyPackage){
+        if(bodyPackage==null || bodyPackage.length==0){
             return null;
         }
         else{
-            return content.getBytes(Charset.forName(CharsetName));
+            return new String(bodyPackage, Charset.forName(CharsetName));
         }
     }
 
     /**
-     *
+     * 根据内容，返回整个包
      * @param content
      * @return
      */
-    public static byte[] getPackageBodyFromContent(byte[] content){
-        if(content==null || content.length==0){
+    public static byte[] getTotalPackage(String content){
+        if(content==null || content.isEmpty()){
             return null;
         }else {
-            byte[] headerBytes = getHeadPackage(content.length);
-            byte[] packageBytes = new byte[headerBytes.length + content.length];
+            byte[] bodyBytes = content.getBytes(Charset.forName(CharsetName));
+            byte[] headerBytes = getHeadPackage(bodyBytes.length);
+            byte[] packageBytes = new byte[headerBytes.length + bodyBytes.length];
             System.arraycopy(headerBytes, 0, packageBytes, 0, headerBytes.length);
-            System.arraycopy(content, 0, packageBytes, headerBytes.length, content.length);
+            System.arraycopy(bodyBytes, 0, packageBytes, headerBytes.length, bodyBytes.length);
             return packageBytes;
         }
-
     }
 
+    /**
+     * 发送数据处理
+     * @param output
+     * @param content
+     * @throws IOException
+     */
+    public static void sendProcess(OutputStream output, String content) throws IOException {
+        if(output == null)
+            throw new IllegalArgumentException("无效的输出流");
+        else {
+            if(content!=null && !content.isEmpty()){
+                byte[] totalPackage = getTotalPackage(content);
+                output.write(totalPackage);
+                output.flush();
+            }
+        }
+    }
 
-
-
-
-
-
-
-
-
+    /**
+     * 接收数据处理
+     * @param input
+     * @param handler
+     * @throws IOException
+     */
+    public static void receiveProcess(InputStream input, IMessageHandler handler) throws IOException, InterruptedException {
+        if(input == null)
+            throw new IllegalArgumentException("无效的输入流");
+        else{
+            int headLength = 0;
+            int bodyLength = 0;
+            byte[] headBytes = null;
+            byte[] bodyBytes = null;
+            while (true){
+                headBytes = new byte[Convert.HeaderLength];
+                if(headLength < Convert.HeaderLength){
+                    byte[] remainHeader = new byte[Convert.HeaderLength-headLength];
+                    int readLength = input.read(remainHeader);
+                    if(readLength>0) {
+                        System.arraycopy(remainHeader, 0, headBytes, headLength, readLength);
+                        headLength += readLength;
+                    }
+                    if(headLength < Convert.HeaderLength){
+                        continue;
+                    }
+                }
+                int totalBodyLength = Convert.getBodyLength(headBytes);
+                bodyBytes = new byte[totalBodyLength];
+                if(bodyLength < totalBodyLength){
+                    byte[] remainBody = new byte[totalBodyLength-bodyLength];
+                    int readLength = input.read(remainBody);
+                    if(readLength>0) {
+                        System.arraycopy(remainBody, 0, bodyBytes, bodyLength, readLength);
+                        bodyLength += readLength;
+                    }
+                    if(bodyLength < totalBodyLength){
+                        continue;
+                    }
+                }
+                if(handler != null){
+                    handler.prcessMessage(getContent(bodyBytes));
+                }
+                headLength = 0;
+                bodyLength = 0;
+            }
+        }
+    }
 }

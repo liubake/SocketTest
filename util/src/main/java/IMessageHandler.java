@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * Created by Erola on 2018/4/27.
  */
@@ -8,7 +10,5 @@ public interface IMessageHandler {
      * @param message
      * @return
      */
-    String prcessMessage(String message);
-
-
+    void prcessMessage(String message) throws IOException, InterruptedException;
 }
