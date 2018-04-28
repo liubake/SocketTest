@@ -6,59 +6,52 @@ import java.net.Socket;
  */
 public class ServerHandler implements Runnable {
 
+    /**
+     *
+     */
     private Socket socket;
 
+    /**
+     *
+     * @param socket
+     */
     public  ServerHandler(Socket socket){
         this.socket=socket;
     }
 
+    /**
+     *
+     */
     @Override
     public void run() {
-        PrintWriter out=null;
-        InputStream in=null;
-
-        byte[] headBytes = new byte[0];
-        byte[] bodyBytes = new byte[0];
+        InputStream input=null;
+        OutputStream output=null;
         try{
-            out=new PrintWriter(socket.getOutputStream(), true);
-            in = socket.getInputStream();
-            while (true){
-                if(headBytes.length < Convert.HeaderLength){
-                    int remainLength = Convert.HeaderLength-headBytes.length;
-                    byte[] remainHeader = new byte[remainLength];
-                    int readLength = in.read(remainHeader);
-                    if(readLength>0) {
-                        System.arraycopy(remainHeader, 0, headBytes, headBytes.length, readLength);
-                    }
-                    if(readLength < remainLength){
-                        continue;
-                    }
-                }
-                //int bodyLength = Convert.getBodyLength()
-
-
-
-
-
-            }
-
-
-
+            input = socket.getInputStream();
+            output = socket.getOutputStream();
+            final OutputStream finalOutput = output;
+            Convert.receiveProcess(input, (String message)->{
+                System.out.println(String.format("***--------------------------------------***\n%s", message));
+                /**-------------下面开始回复消息------------**/
+                Thread.sleep(500);
+                Convert.sendProcess(finalOutput, ""
+                        +"我是这个世界的一个和平主义者，我首先收到信息是你们文明的幸运，警告你们：不要回答！不要回答！！不要回答！！！\n"
+                        +"你们的方向上有千万颗恒星，只要不回答，这个世界就无法定位发射源。\n"
+                        +"如果回答，发射源将被定位，你们的行星系将遭到入侵，你们的世界将被占领！不要回答！不要回答！！不要回答！！！\n");
+            });
         }catch (Exception e){
-
+            e.printStackTrace();
         }finally {
-            if(in!=null){
+            if(input!=null){
                 try {
-                    in.close();
-                    in=null;
+                    input.close();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
-            if(out!=null){
+            if(output!=null){
                 try {
-                    out.close();
-                    out=null;
+                    output.close();
                 }catch (Exception e1){
                     e1.printStackTrace();
                 }
