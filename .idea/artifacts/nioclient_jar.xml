@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="nioclient:jar">
+    <output-path>$PROJECT_DIR$/nioclient/target/out</output-path>
+    <root id="root">
+      <element id="archive" name="nioclient.jar">
+        <element id="module-output" name="nioclient" />
+        <element id="module-output" name="util" />
+      </element>
+    </root>
+  </artifact>
+</component>

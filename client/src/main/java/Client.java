@@ -14,7 +14,8 @@ public class Client {
 
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress("10.10.83.239", Convert.Port));
+            socket.connect(new InetSocketAddress("127.0.0.1", Convert.Port));
+            //socket.connect(new InetSocketAddress("10.10.83.239", Convert.Port));
             input = socket.getInputStream();
             output = socket.getOutputStream();
             final InputStream finalInput = input;
@@ -22,9 +23,9 @@ public class Client {
             (new Thread(()->{
                 BufferedReader reader = null;
                 try {
-                    reader=new BufferedReader(new FileReader(new File("C:\\Users\\Erola\\Downloads\\三 体.txt")));
+                    reader=new BufferedReader(new FileReader(new File("C:\\Users\\Erola\\Downloads\\新建文件夹 (3)\\三 体.txt")));
                     final BufferedReader finalReader = reader;
-                    Convert.receiveProcess(finalInput, (String message)->{
+                    Convert.bioReceiveProcess(finalInput, (String message)->{
                         System.out.println(String.format("%s", message));
                         /*String content = ""
                                 +"向收到该信息的世界致以美好的祝愿。\n"
@@ -38,8 +39,8 @@ public class Client {
 
                         String content = finalReader.readLine();
                         if(content != null){
-                            Thread.sleep(500);
-                            Convert.sendProcess(finalOutput, content);
+                            Thread.sleep(10);
+                            Convert.bioSendProcess(finalOutput, content);
                         }else{
                             throw new RuntimeException("内容已结束");
                         }
@@ -56,7 +57,7 @@ public class Client {
                     }
                 }
             })).start();
-            Convert.sendProcess(output, "HELLO!");
+            Convert.bioSendProcess(output, "HELLO!");
             (new BufferedReader(new InputStreamReader(System.in))).readLine();
         } catch (Exception e1) {
             e1.printStackTrace();
