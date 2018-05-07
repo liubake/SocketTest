@@ -214,7 +214,7 @@ public class Convert {
             ByteBuffer receiveBuffer = ByteBuffer.allocate(128);
             int readLength = ((SocketChannel)selectionKey.channel()).read(receiveBuffer);
             PackageReceiveTempData tempData=nioReceiveMap.getOrDefault(selectionKey.channel(), new PackageReceiveTempData());
-            while (receiveBuffer.hasRemaining() || readLength>0) {
+            while (receiveBuffer.hasRemaining()) {
                 receiveBuffer.flip();
                 if (tempData.headLength < Convert.HeaderLength) {
                     if (tempData.headLength == 0) {
@@ -264,7 +264,8 @@ public class Convert {
             }
             if(readLength==0){
                 nioReceiveMap.put(selectionKey.channel(), tempData);
-            }else{
+            }
+            /*else{
                 nioReceiveMap.remove(selectionKey.channel());
                 try {
                     selectionKey.channel().close();
@@ -272,7 +273,7 @@ public class Convert {
                     e.printStackTrace();
                 }
                 selectionKey.cancel();
-            }
+            }*/
         }
     }
 
