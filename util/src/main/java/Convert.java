@@ -212,10 +212,10 @@ public class Convert {
             throw new IllegalArgumentException("无效的SelectionKey");
         else{
             ByteBuffer receiveBuffer = ByteBuffer.allocate(128);
-            int readLength = ((SocketChannel)selectionKey.channel()).read(receiveBuffer);
+            ((SocketChannel)selectionKey.channel()).read(receiveBuffer);
+            receiveBuffer.flip();
             PackageReceiveTempData tempData=nioReceiveMap.getOrDefault(selectionKey.channel(), new PackageReceiveTempData());
             while (receiveBuffer.hasRemaining()) {
-                receiveBuffer.flip();
                 if (tempData.headLength < Convert.HeaderLength) {
                     if (tempData.headLength == 0) {
                         tempData.headBytes = new byte[Convert.HeaderLength];
@@ -231,7 +231,8 @@ public class Convert {
                     }
                     if (tempData.headLength < Convert.HeaderLength) {
                         receiveBuffer.clear();
-                        readLength = ((SocketChannel)selectionKey.channel()).read(receiveBuffer);
+                        ((SocketChannel)selectionKey.channel()).read(receiveBuffer);
+                        receiveBuffer.flip();
                         continue;
                     } else {
                         tempData.totalBodyLength = Convert.getBodyLength(tempData.headBytes);
@@ -242,38 +243,27 @@ public class Convert {
                         tempData.bodyBytes = new byte[tempData.totalBodyLength];
                     }
                     int bufferRemainLength = receiveBuffer.remaining();
-                    int bodyRemainLength = tempData.totalBodyLength-tempData.bodyLength;
-                    if(bufferRemainLength >= bodyRemainLength){
+                    int bodyRemainLength = tempData.totalBodyLength - tempData.bodyLength;
+                    if (bufferRemainLength >= bodyRemainLength) {
                         receiveBuffer.get(tempData.bodyBytes, tempData.bodyLength, bodyRemainLength);
-                        tempData.bodyLength=tempData.totalBodyLength;
-                    }else{
+                        tempData.bodyLength = tempData.totalBodyLength;
+                    } else {
                         receiveBuffer.get(tempData.bodyBytes, tempData.bodyLength, bufferRemainLength);
-                        tempData.bodyLength+=bufferRemainLength;
+                        tempData.bodyLength += bufferRemainLength;
                     }
                     if (tempData.bodyLength < tempData.totalBodyLength) {
                         receiveBuffer.clear();
-                        readLength = ((SocketChannel)selectionKey.channel()).read(receiveBuffer);
+                        ((SocketChannel)selectionKey.channel()).read(receiveBuffer);
+                        receiveBuffer.flip();
                         continue;
-                    }else{
-                        if (handler != null) {
-                            handler.prcessMessage(getContent(tempData.bodyBytes));
-                        }
-                        tempData.reset();
                     }
                 }
-            }
-            if(readLength==0){
-                nioReceiveMap.put(selectionKey.channel(), tempData);
-            }
-            /*else{
-                nioReceiveMap.remove(selectionKey.channel());
-                try {
-                    selectionKey.channel().close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (handler != null) {
+                    handler.prcessMessage(getContent(tempData.bodyBytes));
                 }
-                selectionKey.cancel();
-            }*/
+                tempData.reset();
+            }
+            nioReceiveMap.put(selectionKey.channel(), tempData);
         }
     }
 
