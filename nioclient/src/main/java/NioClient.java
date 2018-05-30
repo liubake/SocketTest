@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.URLDecoder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -18,12 +19,15 @@ public class NioClient {
             final Selector finalSelector = selector = Selector.open();
             socketChannel = SocketChannel.open();
             socketChannel.configureBlocking(false);
-            socketChannel.connect(new InetSocketAddress("127.0.0.1", Convert.Port));
+            //socketChannel.connect(new InetSocketAddress("127.0.0.1", Convert.Port));
+            socketChannel.connect(new InetSocketAddress("10.10.83.239", Convert.Port));
             socketChannel.register(selector, SelectionKey.OP_CONNECT);
             (new Thread(()->{
                 BufferedReader reader = null;
                 try {
-                    reader=new BufferedReader(new FileReader(new File("C:\\Users\\Erola\\Downloads\\新建文件夹 (3)\\三 体.txt")));
+                    File currentFile = new File(NioClient.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+                    String rootDirectory = URLDecoder.decode(currentFile.getParent(), "utf-8");
+                    reader=new BufferedReader(new FileReader(new File(rootDirectory + File.separator + "三 体.txt")));
                     final BufferedReader finalReader = reader;
                     while (true) {
                         if (finalSelector.select() > 0) {

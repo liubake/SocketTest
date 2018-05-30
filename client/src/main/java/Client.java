@@ -1,21 +1,22 @@
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URLDecoder;
 
 /**
  * Created by Erola on 2018/4/23.
  */
 public class Client {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Socket socket = null;
         InputStream input = null;
         OutputStream output = null;
 
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress("127.0.0.1", Convert.Port));
-            //socket.connect(new InetSocketAddress("10.10.83.239", Convert.Port));
+            //socket.connect(new InetSocketAddress("127.0.0.1", Convert.Port));
+            socket.connect(new InetSocketAddress("10.10.83.239", Convert.Port));
             input = socket.getInputStream();
             output = socket.getOutputStream();
             final InputStream finalInput = input;
@@ -23,7 +24,9 @@ public class Client {
             (new Thread(()->{
                 BufferedReader reader = null;
                 try {
-                    reader=new BufferedReader(new FileReader(new File("C:\\Users\\Erola\\Downloads\\新建文件夹 (3)\\三 体.txt")));
+                    File currentFile = new File(Client.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+                    String rootDirectory = URLDecoder.decode(currentFile.getParent(), "utf-8");
+                    reader=new BufferedReader(new FileReader(new File(rootDirectory + File.separator + "三 体.txt")));
                     final BufferedReader finalReader = reader;
                     Convert.bioReceiveProcess(finalInput, (String message)->{
                         System.out.println(String.format("%s", message));
