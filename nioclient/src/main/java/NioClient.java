@@ -26,7 +26,7 @@ public class NioClient {
                 BufferedReader reader = null;
                 try {
                     File currentFile = new File(NioClient.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-                    String rootDirectory = URLDecoder.decode(currentFile.getParent(), "utf-8");
+                    String rootDirectory = URLDecoder.decode(currentFile.getParentFile().toURI().toString(), "utf-8");
                     reader=new BufferedReader(new FileReader(new File(rootDirectory + File.separator + "三 体.txt")));
                     final BufferedReader finalReader = reader;
                     while (true) {
@@ -82,7 +82,7 @@ public class NioClient {
                     }
                 }
             })).start();
-            (new BufferedReader(new InputStreamReader(System.in))).readLine();
+            System.in.read();
         }catch (Exception e1){
             e1.printStackTrace();
         }finally {
