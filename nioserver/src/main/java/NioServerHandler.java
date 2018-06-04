@@ -37,7 +37,6 @@ public class NioServerHandler implements Runnable {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            selectionKey.cancel();
             e.printStackTrace();
         }
     }

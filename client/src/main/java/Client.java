@@ -25,8 +25,8 @@ public class Client {
                 BufferedReader reader = null;
                 try {
                     File currentFile = new File(Client.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-                    String rootDirectory = URLDecoder.decode(currentFile.getParentFile().toURI().toString(), "utf-8");
-                    reader=new BufferedReader(new FileReader(new File(rootDirectory + File.separator + "三 体.txt")));
+                    String rootDirectory = URLDecoder.decode(currentFile.getParentFile().getCanonicalPath(), "utf-8");
+                    reader=new BufferedReader(new FileReader(new File(rootDirectory + File.separator + "sendfile.txt")));
                     final BufferedReader finalReader = reader;
                     Convert.bioReceiveProcess(finalInput, (String message)->{
                         System.out.println(String.format("%s", message));

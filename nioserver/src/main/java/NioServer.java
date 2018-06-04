@@ -54,10 +54,22 @@ public class NioServer {
                                         try {
                                             Convert.nioSendProcess(selectionKey, message);
                                         } catch (IOException e) {
+                                            try {
+                                                selectionKey.channel().close();
+                                            } catch (IOException e1) {
+                                                e1.printStackTrace();
+                                            }
                                             e.printStackTrace();
                                         }
                                     });
                                 });
+                            } catch (IOException e) {
+                                try {
+                                    selectionKey.channel().close();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                                e.printStackTrace();
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
