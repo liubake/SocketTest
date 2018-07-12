@@ -1,0 +1,8 @@
+.idea/
+
+# Compile directories
+util/target/
+client/target/
+server/target/
+nioclient/target/
+nioserver/target/
